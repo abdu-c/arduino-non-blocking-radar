@@ -1,26 +1,23 @@
 # Arduino Non-Blocking Ultrasonic Radar
 
-`millis()` tabanlı durum makinesi (state machine) mimarisiyle çalışan, kesintisiz (non-blocking) ultrasonik radar sistemi. Geleneksel `delay()` ve bloke edici `pulseIn()` döngüleri kaldırılarak servo taraması, mesafe ölçümü ve I2C LCD ekran güncellemeleri birbirinden bağımsız zamanlayıcılara ayrılmıştır.
+`millis()` tabanlı durum makinesi (state machine) mimarisiyle çalışan, kesintisiz (non-blocking) ultrasonik radar sistemi ve canlı Processing radar görselleştirme arayüzü. Geleneksel `delay()` ve bloke edici `pulseIn()` bekleme sürelerini ortadan kaldırarak aynı anda servo taraması, mesafe ölçümü, I2C LCD ekran güncellemesi ve gerçek zamanlı PC arayüzü veri akışı sağlar.
 
-## Mimari İyileştirmeler
+## Öne Çıkan Özellikler ve Mimari
 
-* **Non-Blocking Servo Tarama (`30 ms`):** `for` döngüleri ve `delay(30)` yerine `millis()` tabanlı adım kontrolü ile 15°–165° aralığında kesintisiz tarama.
-* **PulseIn Timeout Koruması (`200 cm`):** Açık alanda yankı dönmediğinde işlemcinin 1 saniye kilitlenmesini önlemek için `MAX_CM * 59UL` zaman aşımı sınırı.
-* **Ayrık I2C LCD Zamanlayıcısı (`120 ms`):** Ekran titremesini (flicker) ve I2C veri yolu gecikmesini önlemek için bağımsız ekran yenileme döngüsü.
-* **Processing Uyumlu Seri Çıktı:** `9600 baud` hızında `"Açı,Mesafe."` formatında gerçek zamanlı veri akışı.
+* **Non-Blocking Servo Tarama (`30 ms`):** `for` döngüleri ve `delay(30)` yerine `millis()` tabanlı adım kontrolü ile 15°–165° aralığında akıcı ve kesintisiz tarama.
+* **PulseIn Timeout Koruması (`200 cm`):** Açık alanda yankı dönmediğinde işlemcinin 1 saniye boyunca kilitlenmesini önlemek için `MAX_CM * 59UL` zaman aşımı sınırı.
+* **Ayrık I2C LCD Zamanlayıcısı (`120 ms`):** Ekran titremesini (flicker) ve I2C veri yolu gecikmesini önlemek için servo hareketinden bağımsız ekran yenileme döngüsü.
+* **Canlı Processing Radar Arayüzü:** `9600 baud` hızında `"Açı,Mesafe."` formatında seri veri okuyarak 200 cm menzil halkaları, hareket izi (motion blur) efekti ve kırmızı hedef işaretlemesiyle gerçek zamanlı görselleştirme.
+* **Türkçe Windows Yerel Ayar Uyumluluğu:** Processing'in `int()` fonksiyonunda oluşan `parseİnt` derleme hatasını önlemek için doğrudan Java standart `Integer.valueOf()` dönüşümü ve paket koruma (`try-catch`) mekanizması.
 
-## Donanım ve Pin Bağlantıları
+## Proje Yapısı
 
-| Bileşen | Pin / Adres | Arduino Bağlantısı |
-| :--- | :--- | :--- |
-| **HC-SR04 Trig** | `D9` | Dijital Çıkış |
-| **HC-SR04 Echo** | `D10` | Dijital Giriş |
-| **SG90 Servo Sinyal** | `D11` | PWM Çıkış |
-| **Uyarı LED'i** | `D12` | 220Ω–330Ω Direnç ile Dijital Çıkış |
-| **16x2 I2C LCD** | `0x27` (veya `0x3F`) | `SDA -> A4`, `SCL -> A5`, `VCC -> 5V`, `GND -> GND` |
-
-## Kurulum ve Çalıştırma
-
-1. Depoyu klonlayın:
-   ```bash
-   git clone [https://github.com/abdu-c/arduino-non-blocking-radar.git](https://github.com/abdu-c/arduino-non-blocking-radar.git)
+```text
+arduino-non-blocking-radar/
+├── radar/
+│   └── radar.ino                  # Arduino millis() tabanlı gömülü sistem yazılımı
+├── radar_ui/radar_ui/
+│   └── radar_ui.pde               # Processing canlı radar görselleştirme arayüzü
+├── .gitignore                     # Gereksiz sistem dosyalarını hariç tutma kuralları
+├── LICENSE                        # MIT Lisansı
+└── README.md                      # Proje dokümantasyonu
